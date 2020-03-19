@@ -118,6 +118,7 @@
             this.buttonAsk.TabIndex = 11;
             this.buttonAsk.Text = "Ask for a card";
             this.buttonAsk.UseVisualStyleBackColor = true;
+            this.buttonAsk.Click += new System.EventHandler(this.buttonAsk_Click_1);
             // 
             // textBooks
             // 
@@ -145,6 +146,7 @@
             this.Controls.Add(this.textName);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

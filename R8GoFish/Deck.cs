@@ -10,7 +10,6 @@ namespace R8GoFish
     {
         private List<Card> cards;
         private Random random = new Random();
-        int i = 0;
         public Deck()
         {
             cards = new List<Card>();

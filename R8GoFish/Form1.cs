@@ -15,6 +15,7 @@ namespace R8GoFish
         public Form1()
         {
             InitializeComponent();
+            this.buttonStart.Click += new EventHandler(buttonStart_Click);
         }
         private Game game;
         private void buttonStart_Click(object sender, EventArgs e)
@@ -40,22 +41,31 @@ namespace R8GoFish
             textProgress.SelectionStart = textProgress.Text.Length;
             textProgress.ScrollToCaret();
         }
-        private void buttonAsk_Click(object sender, EventArgs e)
+        
+
+        private void Form1_Load(object sender, EventArgs e)
         {
-            textProgress.Text = "";
-            if (listHand.SelectedIndex < 0)
+
+        }
+
+        private void buttonAsk_Click_1(object sender, EventArgs e)
+        {
             {
-                MessageBox.Show("Please select a card");
-                return;
+                textProgress.Text = "";
+                if (listHand.SelectedIndex < 0)
+                {
+                    MessageBox.Show("Please select a card");
+                    return;
+                }
+                if (game.PlayOneRound(listHand.SelectedIndex))
+                {
+                    textProgress.Text += "The winner is... " + game.GetWinnerName();
+                    textBooks.Text = game.DescribeBooks();
+                    buttonAsk.Enabled = false;
+                }
+                else
+                    UpdateForm();
             }
-            if (game.PlayOneRound(listHand.SelectedIndex))
-            {
-                textProgress.Text += "The winner is... " + game.GetWinnerName();
-                textBooks.Text = game.DescribeBooks();
-                buttonAsk.Enabled = false;
-            }
-            else
-                UpdateForm();
         }
     }
 }

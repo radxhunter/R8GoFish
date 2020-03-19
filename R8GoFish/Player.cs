@@ -25,7 +25,7 @@ namespace R8GoFish
         public IEnumerable<Values> PullOutBooks()
         {
             List<Values> books = new List<Values>();
-            for (int i = 1; i <= 13; i++)
+            for (int i = 0; i <= 13; i++)
             {
                 Values value = (Values)i;
                 int howMany = 0;
@@ -50,20 +50,17 @@ namespace R8GoFish
                     if (cards.Peek(card).Value == value && !valuesInTheDeck.Contains(value))
                         valuesInTheDeck.Add(value);
             } 
-            int randomValueInt = random.Next(1, valuesInTheDeck.Count); 
-            Values randomValue = (Values)randomValueInt;
+            
+            int randomValueInt = random.Next(valuesInTheDeck.Count); 
+            Values randomValue = valuesInTheDeck[randomValueInt];
             return randomValue;
             // This method gets a random value—but it has to be a value that's in the deck!
         }
         public Deck DoYouHaveAny(Values value)
         {
-            Deck ownedCards;
-            if (cards.ContainsValue(value))
-            {
-                ownedCards = cards.PullOutValues(value);
-                textBoxOnForm.Text += Name + " has " + ownedCards.Count + " " + Card.Plural(value) + "\r\n";
-            }
-            return cards.PullOutValues(value);
+            Deck ownedCards = cards.PullOutValues(value);
+            textBoxOnForm.Text += Name + " has " + ownedCards.Count + " " + Card.Plural(value) + "\r\n";
+            return ownedCards;
             // This is where an opponent asks if I have any cards of a certain value
             // Use Deck.PullOutValues() to pull out the values. Add a line to the TextBox
             // that says, "Joe has 3 sixes"—use the new Card.Plural() static method
@@ -71,10 +68,12 @@ namespace R8GoFish
         public void AskForACard(List<Player> players, int myIndex, Deck stock)
         {
             if (stock.Count > 0)
+            {
                 if (cards.Count == 0)
                     cards.Add(stock.Deal());
-            Values randomValue = GetRandomValue();
-            AskForACard(players, myIndex, stock, randomValue);
+                Values randomValue = GetRandomValue();
+                AskForACard(players, myIndex, stock, randomValue);
+            }
         }
         public void AskForACard(List<Player> players, int myIndex, Deck stock, Values value)
         {
@@ -85,15 +84,15 @@ namespace R8GoFish
                 if (i != myIndex)
                 {
                     Player player = players[i];
-                    Deck cardsGiven = player.DoYouHaveAny(value);
-                    totalCardsGiven += cardsGiven.Count;
-                    while (cardsGiven.Count > 0)
-                        cards.Add(cardsGiven.Deal());
+                    Deck CardsGiven = player.DoYouHaveAny(value);
+                    totalCardsGiven += CardsGiven.Count;
+                    while (CardsGiven.Count > 0)
+                        cards.Add(CardsGiven.Deal());
                 }
             }
             if (totalCardsGiven == 0 && stock.Count > 0)
             {
-                textBoxOnForm.Text += Name + " must draw from the stock. \r\n";
+                textBoxOnForm.Text += Name + " must draw from the stock." + Environment.NewLine;
                 cards.Add(stock.Deal());
             }
         }
