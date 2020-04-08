@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace R8GoFish
+﻿namespace R8GoFish
 {
-    enum Values
+    enum CardValues
     {
         Ace,
         Two,

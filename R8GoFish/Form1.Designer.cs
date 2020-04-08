@@ -1,16 +1,11 @@
-﻿namespace R8GoFish
+﻿using System.ComponentModel;
+
+namespace R8GoFish
 {
     partial class Form1
     {
-        /// <summary>
-        /// Wymagana zmienna projektanta.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
-        /// <summary>
-        /// Wyczyść wszystkie używane zasoby.
-        /// </summary>
-        /// <param name="disposing">prawda, jeżeli zarządzane zasoby powinny zostać zlikwidowane; Fałsz w przeciwnym wypadku.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,12 +15,6 @@
             base.Dispose(disposing);
         }
 
-        #region Kod generowany przez Projektanta formularzy systemu Windows
-
-        /// <summary>
-        /// Metoda wymagana do obsługi projektanta — nie należy modyfikować
-        /// jej zawartości w edytorze kodu.
-        /// </summary>
         private void InitializeComponent()
         {
             this.textName = new System.Windows.Forms.TextBox();
@@ -145,14 +134,11 @@
             this.Controls.Add(this.textProgress);
             this.Controls.Add(this.textName);
             this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Text = "R8GoFish";
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-
-        #endregion
 
         private System.Windows.Forms.TextBox textName;
         private System.Windows.Forms.TextBox textProgress;

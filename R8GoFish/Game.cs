@@ -1,45 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 
 namespace R8GoFish
 {
     class Game
     {
-        private List<Player> players;
-        private Dictionary<Values, Player> books;
-        private Deck stock;
-        private TextBox textBoxOnForm;
-        public Game(string playerName, IEnumerable<string> opponentNames, TextBox textBoxOnForm)
+        private readonly List<Player> _players;
+        private readonly Dictionary<CardValues, Player> books;
+        private readonly Deck stock;
+        private readonly TextBox textBoxOnForm;
+        public Game(string playerName, IReadOnlyCollection<string> opponentNames, TextBox textBoxOnForm)
         {
-            Random random = new Random();
+            var random = new Random();
             this.textBoxOnForm = textBoxOnForm;
-            players = new List<Player>();
-            players.Add(new Player(playerName, random, textBoxOnForm));
-            foreach (string player in opponentNames)
-                players.Add(new Player(player, random, textBoxOnForm));
-            books = new Dictionary<Values, Player>();
+
+            // Initialize a list with local player already in
+            _players = new List<Player>(opponentNames.Count + 1) 
+                { new Player(playerName, random, textBoxOnForm) };
+
+            books = new Dictionary<CardValues, Player>();
             stock = new Deck();
+            foreach (var name in opponentNames)
+            {
+                _players.Add(new Player(name, random, textBoxOnForm));
+            }
+            
             Deal();
-            players[0].SortHand();
+            _players[0].SortHand();
         }
         private void Deal()
         {
             stock.Shuffle();
-            for (int i = 0; i < players.Count; i++)
+            foreach (var player in _players)
             {
-                for (int j = 1; j <= 5; j++)
+                for (var j = 1; j <= 5; j++)
                 {
                     if (stock.Count > 0)
-                    {
-                        players[i].TakeCard(stock.Deal());
-                    }
+                        player.TakeCard(stock.Deal());
                 }
             }
-            foreach (var player in players)
+            foreach (var player in _players)
                 player.PullOutBooks();
             // This is where the game starts—this method's only called at the beginning
             // of the game. Shuffle the stock, deal five cards to each player, then use a
@@ -47,29 +48,28 @@ namespace R8GoFish
         }
         public bool PlayOneRound(int selectedPlayerCard)
         {
-            Values cardValue = players[0].Peek(selectedPlayerCard).Value;
-            foreach (var player in players)
+            var cardCardValue = _players[0].Peek(selectedPlayerCard).CardValue;
+            foreach (var player in _players)
             {
-                if (players.IndexOf(player) == 0)
-                    player.AskForACard(players, players.IndexOf(player), stock, cardValue);
-                else 
-                    player.AskForACard(players, players.IndexOf(player), stock);
+                if (_players.IndexOf(player) == 0)
+                    player.AskForACard(_players, _players.IndexOf(player), stock, cardCardValue);
+                else
+                    player.AskForACard(_players, _players.IndexOf(player), stock);
                 if (PullOutBooks(player))
                     player.TakeCard(stock.Deal());
                 player.SortHand();
-                if (stock.Count <= 0)
-                {
-                    textBoxOnForm.Text = "The stock is out of cards. Game over!";
-                    return true;
-                }
+                if (stock.Count > 0) continue;
+
+                textBoxOnForm.Text = "The stock is out of cards. Game over!";
+                return true;
             }
             return false;
             // Play one round of the game. The parameter is the card the player selected
-            // from his hand—get its value. Then go through all of the players and call
+            // from his hand—get its cardValue. Then go through all of the _players and call
             // each one's AskForACard() methods, starting with the human player (who's
             // at index zero in the Players list—make sure he asks for the selected
-            // card's value). Then call PullOutBooks()—if it returns true, then the
-            // player ran out of cards and needs to draw a new hand. After all the players
+            // card's cardValue). Then call PullOutBooks()—if it returns true, then the
+            // player ran out of cards and needs to draw a new hand. After all the _players
             // have gone, sort the human player's hand (so it looks nice in the form).
             // Then check the stock to see if it's out of cards. If it is, reset the
             // TextBox on the form to say, "The stock is out of cards. Game over!" and return
@@ -79,9 +79,7 @@ namespace R8GoFish
         {
             foreach (var book in player.PullOutBooks())
                 books.Add(book, player);
-            if (player.CardCount <= 0)
-                return true;
-            else return false;  
+            return player.CardCount <= 0;
             // Pull out a player's books. Return true if the player ran out of cards, otherwise
             // return false. Each book is added to the Books dictionary. A player runs out of
             // cards when he’'s used all of his cards to make books—and he wins the game.
@@ -98,7 +96,7 @@ namespace R8GoFish
         public string GetWinnerName()
         {
             Dictionary<string, int> winners = new Dictionary<string, int>();
-            foreach (Values value in books.Keys)
+            foreach (CardValues value in books.Keys)
             {
                 string name = books[value].Name;
                 if (winners.ContainsKey(name))
@@ -115,7 +113,7 @@ namespace R8GoFish
             foreach (string name in winners.Keys)
                 if (winners[name] == mostBooks)
                 {
-                    if (!String.IsNullOrEmpty(winnerList))
+                    if (!string.IsNullOrEmpty(winnerList))
                     {
                         winnerList += " and ";
                         tie = true;
@@ -125,21 +123,20 @@ namespace R8GoFish
             winnerList += " with " + mostBooks + " books";
             if (tie)
                 return "A tie between " + winnerList;
-            else
-                return winnerList;
+            return winnerList;
         }
         // Here are a couple of short methods that were already written for you:
         public IEnumerable<string> GetPlayerCardNames()
         {
-            return players[0].GetCardNames();
+            return _players[0].GetCardNames();
         }
         public string DescribePlayerHands()
         {
             string description = "";
-            for (int i = 0; i < players.Count; i++)
+            foreach (var player in _players)
             {
-                description += players[i].Name + " has " + players[i].CardCount;
-                if (players[i].CardCount == 1)
+                description += player.Name + " has " + player.CardCount;
+                if (player.CardCount == 1)
                     description += " card." + Environment.NewLine;
                 else
                     description += " cards." + Environment.NewLine;
