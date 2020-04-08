@@ -1,9 +1,0 @@
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.csprojAssemblyReference.cache
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.Form1.resources
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.Properties.Resources.resources
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.csproj.GenerateResource.cache
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\bin\Debug\R8GoFish.exe.config
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\bin\Debug\R8GoFish.exe
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\bin\Debug\R8GoFish.pdb
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.exe
-C:\Users\rsendecki\source\repos\R8GoFish\R8GoFish\obj\Debug\R8GoFish.pdb
