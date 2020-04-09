@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace R8GoFish
@@ -15,17 +9,18 @@ namespace R8GoFish
         public Form1()
         {
             InitializeComponent();
-            this.buttonStart.Click += new EventHandler(buttonStart_Click);
+            buttonStart.Click += new EventHandler(buttonStart_Click);
         }
         private Game game;
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(textName.Text))
+            if (string.IsNullOrEmpty(textName.Text))
             {
                 MessageBox.Show("Please enter your name", "Can't start the game yet");
                 return;
             }
             game = new Game(textName.Text, new List<string> { "Joe", "Bob" }, textProgress);
+
             buttonStart.Enabled = false;
             textName.Enabled = false;
             buttonAsk.Enabled = true;
@@ -34,37 +29,34 @@ namespace R8GoFish
         private void UpdateForm()
         {
             listHand.Items.Clear();
-            foreach (String cardName in game.GetPlayerCardNames())
+            foreach (var cardName in game.GetPlayerCardNames())
                 listHand.Items.Add(cardName);
             textBooks.Text = game.DescribeBooks();
             textProgress.Text += game.DescribePlayerHands();
             textProgress.SelectionStart = textProgress.Text.Length;
             textProgress.ScrollToCaret();
         }
-        
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
 
         private void buttonAsk_Click_1(object sender, EventArgs e)
         {
             {
-                textProgress.Text = "";
                 if (listHand.SelectedIndex < 0)
                 {
-                    MessageBox.Show("Please select a card");
+                    MessageBox.Show("Please select a card","Warning");
                     return;
                 }
                 if (game.PlayOneRound(listHand.SelectedIndex))
                 {
-                    textProgress.Text += "The winner is... " + game.GetWinnerName();
+                    textProgress.Text += $"The winner is... {game.GetWinnerName()}\r\n";
                     textBooks.Text = game.DescribeBooks();
                     buttonAsk.Enabled = false;
                 }
                 else
+                {
+                    textProgress.Text = "";
                     UpdateForm();
+                }
             }
         }
     }

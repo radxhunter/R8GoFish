@@ -1,102 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace R8GoFish
 {
     class Deck
     {
-        private List<Card> cards;
-        private Random random = new Random();
+        private List<Card> _cards;
+        private readonly Random _random = new Random();
         public Deck()
         {
-            cards = new List<Card>();
+            _cards = new List<Card>();
             for (int suit = 0; suit < Enum.GetNames(typeof(Suits)).Length; suit++)
-                for (int value = 0; value < Enum.GetNames(typeof(Values)).Length; value++)
-                    cards.Add(new Card((Suits)suit, (Values)value));
+                for (int value = 0; value < Enum.GetNames(typeof(CardValues)).Length; value++)
+                    _cards.Add(new Card((Suits)suit, (CardValues)value));
         }
         public Deck(IEnumerable<Card> initialCards)
         {
-            cards = new List<Card>(initialCards);
+            _cards = new List<Card>(initialCards);
         }
 
-        public int Count { get { return cards.Count; } } 
+        public int Count => _cards.Count;
 
         public void Add(Card cardToAdd)
         {
-            cards.Add(cardToAdd);
+            _cards.Add(cardToAdd);
         }
 
-        public Card Deal (int index)
+        public Card Deal(int index)
         {
-            Card CardToDeal = cards[index];
-            cards.RemoveAt(index);
-            return CardToDeal;
+            var cardToDeal = _cards[index];
+            _cards.RemoveAt(index);
+            return cardToDeal;
         }
+        public Card Deal()
+            => Deal(0);
 
         public void Shuffle()
         {
-            List<Card> newCards = new List<Card>();
-            while (cards.Count > 0)
+            var newCards = new List<Card>();
+            while (_cards.Count > 0)
             {
-                int CardToMove = random.Next(cards.Count);
-                newCards.Add(cards[CardToMove]);
-                cards.RemoveAt(CardToMove);
+                int cardToMove = _random.Next(_cards.Count);
+                newCards.Add(_cards[cardToMove]);
+                _cards.RemoveAt(cardToMove);
             }
-            cards = newCards;
+            _cards = newCards;
         }
 
         public IEnumerable<string> GetCardNames()
         {
-            string[] CardNames = new string[cards.Count];
-            for (int i = 0; i < cards.Count; i++)
-                CardNames[i] = cards[i].Name;
-            return CardNames;
+            var cardNames = new string[_cards.Count];
+            for (var i = 0; i < _cards.Count; i++)
+                cardNames[i] = _cards[i].Name;
+            return cardNames;
         }
 
-        public void Sort()
+        public void SortBySuit()
+            => _cards.Sort(new CardComparerBySuit());
+        public void SortByValue()
+            => _cards.Sort(new CardComparerByValue());
+        public Card Peek(int cardNumber) 
+            => _cards[cardNumber];
+        public bool ContainsValue(CardValues cardValue)
         {
-            cards.Sort(new CardComparer_bySuit());
-        }
-        public Card Peek(int cardNumber)
-        {
-            return cards[cardNumber];
-        }
-        public Card Deal()
-        {
-            return Deal(0);
-        }
-        public bool ContainsValue(Values value)
-        {
-            foreach (Card card in cards)
-                if (card.Value == value)
+            foreach (Card card in _cards)
+                if (card.CardValue == cardValue)
                     return true;
             return false;
         }
-        public Deck PullOutValues(Values value)
+        public Deck PullOutValues(CardValues cardValue)
         {
             Deck deckToReturn = new Deck(new Card[] { });
-            for (int i = cards.Count - 1; i >= 0; i--)
-                if (cards[i].Value == value)
+            for (int i = _cards.Count - 1; i >= 0; i--)
+                if (_cards[i].CardValue == cardValue)
                     deckToReturn.Add(Deal(i));
             return deckToReturn;
         }
-        public bool HasBook(Values value)
+        public bool HasBook(CardValues cardValue)
         {
-            int NumberOfCards = 0;
-            foreach (Card card in cards)
-                if (card.Value == value)
-                    NumberOfCards++;
-            if (NumberOfCards == 4)
-                return true;
-            else
-                return false;
-        }
-        public void SortByValue()
-        {
-            cards.Sort(new CardComparer_byValue());
+            int numberOfCards = 0;
+            foreach (Card card in _cards)
+                if (card.CardValue == cardValue)
+                    numberOfCards++;
+
+            return numberOfCards == 4;
         }
     }
 }

@@ -1,67 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 
 namespace R8GoFish
 {
     class Player
     {
         public string Name { get; }
-        private Random random;
-        private Deck cards;
-        private TextBox textBoxOnForm;
-        public Player(String Name, Random random, TextBox textBoxOnForm)
+        private readonly Random random;
+        private readonly Deck cards;
+        private readonly TextBox textBoxOnForm;
+        public Player(string name, Random random, TextBox textBoxOnForm)
         {
-            this.Name = Name;
+            Name = name;
             this.random = random;
             this.textBoxOnForm = textBoxOnForm;
             cards = new Deck(new Card[] { });
 
-            this.textBoxOnForm.Text += this.Name + " has just joined the game\r\n";
+            this.textBoxOnForm.Text += Name + " has just joined the game\r\n";
         }
-        public IEnumerable<Values> PullOutBooks()
+        public IEnumerable<CardValues> PullOutBooks()
         {
-            List<Values> books = new List<Values>();
+            List<CardValues> books = new List<CardValues>();
             for (int i = 0; i <= 13; i++)
             {
-                Values value = (Values)i;
+                CardValues cardValue = (CardValues)i;
                 int howMany = 0;
                 for (int card = 0; card < cards.Count; card++)
-                    if (cards.Peek(card).Value == value)
+                    if (cards.Peek(card).CardValue == cardValue)
                         howMany++;
-                if (howMany == 4)
-                {
-                    books.Add(value);
-                    cards.PullOutValues(value);
-                }
+                if (howMany != 4) continue;
+
+                books.Add(cardValue);
+                cards.PullOutValues(cardValue);
             }
             return books;
         }
-        public Values GetRandomValue()
+        public CardValues GetRandomValue()
         {
-            List<Values> valuesInTheDeck = new List<Values>();
+            List<CardValues> valuesInTheDeck = new List<CardValues>();
             for (int i = 1; i <= 13; i++)
             {
-                Values value = (Values)i;
+                CardValues cardValue = (CardValues)i;
                 for (int card = 0; card < cards.Count; card++)
-                    if (cards.Peek(card).Value == value && !valuesInTheDeck.Contains(value))
-                        valuesInTheDeck.Add(value);
-            } 
-            
-            int randomValueInt = random.Next(valuesInTheDeck.Count); 
-            Values randomValue = valuesInTheDeck[randomValueInt];
-            return randomValue;
-            // This method gets a random value—but it has to be a value that's in the deck!
+                    if (cards.Peek(card).CardValue == cardValue && !valuesInTheDeck.Contains(cardValue))
+                        valuesInTheDeck.Add(cardValue);
+            }
+
+            int randomValueInt = random.Next(valuesInTheDeck.Count);
+            CardValues randomCardValue = valuesInTheDeck[randomValueInt];
+            return randomCardValue;
+            // This method gets a random cardValue—but it has to be a cardValue that's in the deck!
         }
-        public Deck DoYouHaveAny(Values value)
+        public Deck DoYouHaveAny(CardValues cardValue)
         {
-            Deck ownedCards = cards.PullOutValues(value);
-            textBoxOnForm.Text += Name + " has " + ownedCards.Count + " " + Card.Plural(value) + "\r\n";
+            Deck ownedCards = cards.PullOutValues(cardValue);
+            textBoxOnForm.Text += Name + " has " + ownedCards.Count + " " + Card.Plural(cardValue) + "\r\n";
             return ownedCards;
-            // This is where an opponent asks if I have any cards of a certain value
+            // This is where an opponent asks if I have any cards of a certain cardValue
             // Use Deck.PullOutValues() to pull out the values. Add a line to the TextBox
             // that says, "Joe has 3 sixes"—use the new Card.Plural() static method
         }
@@ -71,32 +67,32 @@ namespace R8GoFish
             {
                 if (cards.Count == 0)
                     cards.Add(stock.Deal());
-                Values randomValue = GetRandomValue();
-                AskForACard(players, myIndex, stock, randomValue);
+                CardValues randomCardValue = GetRandomValue();
+                AskForACard(players, myIndex, stock, randomCardValue);
             }
         }
-        public void AskForACard(List<Player> players, int myIndex, Deck stock, Values value)
+        public void AskForACard(List<Player> players, int myIndex, Deck stock, CardValues cardValue)
         {
-            textBoxOnForm.Text += Name + " asks if anyone has a " + value + Environment.NewLine;
+            textBoxOnForm.Text += Name + " asks if anyone has a " + cardValue + Environment.NewLine;
             int totalCardsGiven = 0;
             for (int i = 0; i < players.Count; i++)
             {
                 if (i != myIndex)
                 {
                     Player player = players[i];
-                    Deck CardsGiven = player.DoYouHaveAny(value);
+                    Deck CardsGiven = player.DoYouHaveAny(cardValue);
                     totalCardsGiven += CardsGiven.Count;
                     while (CardsGiven.Count > 0)
                         cards.Add(CardsGiven.Deal());
                 }
             }
-            if (totalCardsGiven == 0 && stock.Count > 0)
-            {
-                textBoxOnForm.Text += Name + " must draw from the stock." + Environment.NewLine;
-                cards.Add(stock.Deal());
-            }
+
+            if (totalCardsGiven != 0 || stock.Count <= 0) return;
+
+            textBoxOnForm.Text += Name + " must draw from the stock." + Environment.NewLine;
+            cards.Add(stock.Deal());
         }
-        public int CardCount { get { return cards.Count; } }
+        public int CardCount => cards.Count;
         public void TakeCard(Card card) { cards.Add(card); }
         public IEnumerable<string> GetCardNames() { return cards.GetCardNames(); }
         public Card Peek(int cardNumber) { return cards.Peek(cardNumber); }

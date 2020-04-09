@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace R8GoFish
+﻿namespace R8GoFish
 {
-     partial class Card
+    partial class Card
     {
-        public static string Plural(Values value)
+        public static string Plural(CardValues cardValue)
         {
-            if (value == Values.Six)
+            if (cardValue == CardValues.Six)
                 return "Sixes";
-            else
-                return value.ToString() + "s";
+            return cardValue + "s";
         }
     }
 }

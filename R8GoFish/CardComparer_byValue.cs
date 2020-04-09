@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace R8GoFish
 {
-    class CardComparer_byValue : IComparer<Card>
+    class CardComparerByValue : IComparer<Card>
     {
         public int Compare(Card x, Card y)
         {
-            if (x.Value > y.Value)
+            if (x == null || y == null) return 0;
+
+            if (x.CardValue > y.CardValue)
                 return 1;
-            if (x.Value < y.Value)
+            if (x.CardValue < y.CardValue)
                 return -1;
             if (x.Suit > y.Suit)
                 return 1;
             if (x.Suit < y.Suit)
                 return -1;
-            else return 0;
+            return 0;
         }
     }
 }
